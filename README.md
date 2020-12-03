@@ -245,5 +245,214 @@ Based on the histograms, there is quite a bit of skewness and kurtosis in these 
 
 
 ```python
+data = boston.drop('medv', axis=1)
+data.head()
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>crim</th>
+      <th>zn</th>
+      <th>indus</th>
+      <th>chas</th>
+      <th>nox</th>
+      <th>rm</th>
+      <th>age</th>
+      <th>dis</th>
+      <th>rad</th>
+      <th>tax</th>
+      <th>ptratio</th>
+      <th>b</th>
+      <th>lstat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.00632</td>
+      <td>18.0</td>
+      <td>2.31</td>
+      <td>0</td>
+      <td>0.538</td>
+      <td>6.575</td>
+      <td>65.2</td>
+      <td>4.0900</td>
+      <td>1</td>
+      <td>296</td>
+      <td>15.3</td>
+      <td>396.90</td>
+      <td>4.98</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0.02731</td>
+      <td>0.0</td>
+      <td>7.07</td>
+      <td>0</td>
+      <td>0.469</td>
+      <td>6.421</td>
+      <td>78.9</td>
+      <td>4.9671</td>
+      <td>2</td>
+      <td>242</td>
+      <td>17.8</td>
+      <td>396.90</td>
+      <td>9.14</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0.02729</td>
+      <td>0.0</td>
+      <td>7.07</td>
+      <td>0</td>
+      <td>0.469</td>
+      <td>7.185</td>
+      <td>61.1</td>
+      <td>4.9671</td>
+      <td>2</td>
+      <td>242</td>
+      <td>17.8</td>
+      <td>392.83</td>
+      <td>4.03</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>0.03237</td>
+      <td>0.0</td>
+      <td>2.18</td>
+      <td>0</td>
+      <td>0.458</td>
+      <td>6.998</td>
+      <td>45.8</td>
+      <td>6.0622</td>
+      <td>3</td>
+      <td>222</td>
+      <td>18.7</td>
+      <td>394.63</td>
+      <td>2.94</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>0.06905</td>
+      <td>0.0</td>
+      <td>2.18</td>
+      <td>0</td>
+      <td>0.458</td>
+      <td>7.147</td>
+      <td>54.2</td>
+      <td>6.0622</td>
+      <td>3</td>
+      <td>222</td>
+      <td>18.7</td>
+      <td>396.90</td>
+      <td>5.33</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+In order to check for the assumption of linearity, I created a new dataframe with all of the data except for the target variable, `medv`, which was dropped so that we can comapre the linearity of each column to it.
+
+
+```python
+for column in data:
+    plt.scatter(data[column], boston.medv, label=column)
+    plt.legend()
+    plt.show()
+```
+
+
+![png](output_12_0.png)
+
+
+
+![png](output_12_1.png)
+
+
+
+![png](output_12_2.png)
+
+
+
+![png](output_12_3.png)
+
+
+
+![png](output_12_4.png)
+
+
+
+![png](output_12_5.png)
+
+
+
+![png](output_12_6.png)
+
+
+
+![png](output_12_7.png)
+
+
+
+![png](output_12_8.png)
+
+
+
+![png](output_12_9.png)
+
+
+
+![png](output_12_10.png)
+
+
+
+![png](output_12_11.png)
+
+
+
+![png](output_12_12.png)
+
+
+Linearity observations for each variable:
+
+* `crim` - No linearity, outliers are noticeable, continuous variable
+* `zn` - No linearity, can't determine outliers from visual, categorical variable
+* `indus` - No linearity, appears to have outliers, categorical variable
+* `chas` - No linearity, maybe a couple outliers, categorical variable
+* `nox` - No linearity, outliers present, from visual looks categorical, however need to look at column description
+* `rm` - Linearity present, outliers apparent, continuous variable
+* `age` - No linearity, outliers everywhere, ' continuous variable
+* `dis` - Perhaps slight linearity, outliers present, continuous variable
+* `rad` - No linearity, a few outliers, categorical variable
+* `tax` - No linearity, outliers present, categorical variable
+* `ptratio` - No linearity, outliers present, categorical variable
+* `b` - No linearity, outliers present, continuous variable
+* `lstat` - Linearity present, few outliers, continuous variable
+
+This data needs to be normalized and preprocessed more before modeling.
+
+
+```python
 
 ```
