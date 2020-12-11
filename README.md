@@ -685,5 +685,72 @@ normality_check(df_clean_final)
 
 
 ```python
+import seaborn as sns
 
+sns.set(style="white")
+
+# Compute the correlation matrix
+corr = df_clean_final.corr()
+
+# Generate a mask for the upper triangle
+mask = np.zeros_like(corr, dtype=np.bool)
+mask[np.triu_indices_from(mask)] = True
+
+# Set up the matplotlib figure
+f, ax = plt.subplots(figsize=(22, 12))
+
+# Generate a custom diverging colormap
+cmap = sns.diverging_palette(220, 10, as_cmap=True)
+
+# Draw the heatmap with the mask and correct aspect ratio
+sns.heatmap(corr, mask=mask, cmap=cmap, center=0,
+            square=True, linewidths=.5, cbar_kws={"shrink": .5}, annot=True)
 ```
+
+
+
+
+    <matplotlib.axes._subplots.AxesSubplot at 0x7f7fe8250bd0>
+
+
+
+
+![png](output_21_1.png)
+
+
+
+```python
+df_clean_final.drop(['chas'],axis=1,inplace=True)
+```
+
+    /Users/acusiobivona/opt/anaconda3/lib/python3.7/site-packages/pandas/core/frame.py:4102: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      errors=errors,
+
+
+
+```python
+df_clean_final.info()
+```
+
+    <class 'pandas.core.frame.DataFrame'>
+    Int64Index: 415 entries, 0 to 505
+    Data columns (total 13 columns):
+    crim       415 non-null float64
+    zn         415 non-null float64
+    indus      415 non-null float64
+    nox        415 non-null float64
+    rm         415 non-null float64
+    age        415 non-null float64
+    dis        415 non-null float64
+    rad        415 non-null int64
+    tax        415 non-null int64
+    ptratio    415 non-null float64
+    b          415 non-null float64
+    lstat      415 non-null float64
+    medv       415 non-null float64
+    dtypes: float64(11), int64(2)
+    memory usage: 45.4 KB
+
