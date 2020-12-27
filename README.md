@@ -685,53 +685,44 @@ normality_check(df_clean_final)
 
 
 ```python
-import seaborn as sns
+def heatmap(df):
 
-sns.set(style="white")
+    import seaborn as sns
 
-# Compute the correlation matrix
-corr = df_clean_final.corr()
+    sns.set(style="white")
 
-# Generate a mask for the upper triangle
-mask = np.zeros_like(corr, dtype=np.bool)
-mask[np.triu_indices_from(mask)] = True
+    # Compute the correlation matrix
+    corr = df.corr()
 
-# Set up the matplotlib figure
-f, ax = plt.subplots(figsize=(22, 12))
+    # Generate a mask for the upper triangle
+    mask = np.zeros_like(corr, dtype=np.bool)
+    mask[np.triu_indices_from(mask)] = True
 
-# Generate a custom diverging colormap
-cmap = sns.diverging_palette(220, 10, as_cmap=True)
+    # Set up the matplotlib figure
+    f, ax = plt.subplots(figsize=(22, 12))
 
-# Draw the heatmap with the mask and correct aspect ratio
-sns.heatmap(corr, mask=mask, cmap=cmap, center=0,
-            square=True, linewidths=.5, cbar_kws={"shrink": .5}, annot=True)
+    # Generate a custom diverging colormap
+    cmap = sns.diverging_palette(220, 10, as_cmap=True)
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    sns.heatmap(corr, mask=mask, cmap=cmap, center=0,
+                square=True, linewidths=.5, cbar_kws={"shrink": .5}, annot=True)
 ```
 
 
+```python
+heatmap(df_clean_final)
+```
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x7f7fe8250bd0>
+![png](output_22_0.png)
 
 
-
-
-![png](output_21_1.png)
-
+No results appeared for `chas`, so it will be dropped.
 
 
 ```python
 df_clean_final.drop(['chas'],axis=1,inplace=True)
-```
-
-    /Users/acusiobivona/opt/anaconda3/lib/python3.7/site-packages/pandas/core/frame.py:4102: SettingWithCopyWarning: 
-    A value is trying to be set on a copy of a slice from a DataFrame
-    
-    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-      errors=errors,
-
-
-
-```python
 df_clean_final.info()
 ```
 
@@ -754,3 +745,236 @@ df_clean_final.info()
     dtypes: float64(11), int64(2)
     memory usage: 45.4 KB
 
+
+    /Users/acusiobivona/opt/anaconda3/lib/python3.7/site-packages/pandas/core/frame.py:4102: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      errors=errors,
+
+
+There is a multicollinearity issue between `rad`, `crim` and `tax`, so I am going to drop `rad` and recreate the heatmap. This should resolve the issue between all three.
+
+
+```python
+df_clean_final.drop(['rad'],axis=1,inplace=True)
+df_clean_final.info()
+```
+
+    <class 'pandas.core.frame.DataFrame'>
+    Int64Index: 415 entries, 0 to 505
+    Data columns (total 12 columns):
+    crim       415 non-null float64
+    zn         415 non-null float64
+    indus      415 non-null float64
+    nox        415 non-null float64
+    rm         415 non-null float64
+    age        415 non-null float64
+    dis        415 non-null float64
+    tax        415 non-null int64
+    ptratio    415 non-null float64
+    b          415 non-null float64
+    lstat      415 non-null float64
+    medv       415 non-null float64
+    dtypes: float64(11), int64(1)
+    memory usage: 42.1 KB
+
+
+
+```python
+heatmap(df_clean_final)
+```
+
+
+![png](output_27_0.png)
+
+
+The major multicollinearity issues have been resolved. There a couple of mildly high scores, such as 0.73, but I'm going to go forward with things as they stand so that there are more variables to explore. If results are not very good, then I wll explore potentially removing a/some variable(s).
+
+## Feature Selection
+
+To begin, I am going to start by observing the 2 highest scored variables with the target variable, `medv`: `rm` and `zn`. This will be just a beginning analysis because `dis` and `b` have a tied score. If results on these first two variables are poor, then I will explore the latter two to see what we get. 
+
+
+```python
+def scatter_plot(df, x, y):
+    df.plot(x, y, kind='scatter')
+```
+
+
+```python
+scatter_plot(df_clean_final, 'medv', 'rm')
+scatter_plot(df_clean_final, 'medv', 'zn')
+```
+
+    'c' argument looks like a single numeric RGB or RGBA sequence, which should be avoided as value-mapping will have precedence in case its length matches with 'x' & 'y'.  Please use a 2-D array with a single row if you really want to specify the same RGB or RGBA value for all points.
+    'c' argument looks like a single numeric RGB or RGBA sequence, which should be avoided as value-mapping will have precedence in case its length matches with 'x' & 'y'.  Please use a 2-D array with a single row if you really want to specify the same RGB or RGBA value for all points.
+
+
+
+![png](output_32_1.png)
+
+
+
+![png](output_32_2.png)
+
+
+There appears to be a linear relationship between `medv` and `rm`, but not `medv` and `zn`. Because of this, the legitimacy of `zn` as a variable must be questioned because it doesn't pass the linearity assumption. For now, I'm going to go through the entire regression process with these variables as is just as a vanilla process.
+
+
+```python
+%matplotlib inline
+import statsmodels.api as sm
+import statsmodels.stats.api as sms
+import statsmodels.formula.api as smf
+import scipy.stats as stats
+plt.style.use('ggplot')
+
+f = 'medv~rm'
+f2 = 'medv~zn'
+
+model = smf.ols(formula=f, data=df_clean_final).fit()
+model2 = smf.ols(formula=f2, data=df_clean_final).fit()
+
+resid1 = model.resid
+resid2 = model2.resid
+
+display(model.summary())
+
+fig = sm.graphics.qqplot(resid1, dist=stats.norm, line='45', fit=True)
+plt.show()
+
+display(model2.summary())
+
+fig2 = sm.graphics.qqplot(resid2, dist=stats.norm, line='45', fit=True)
+plt.show()
+```
+
+
+<table class="simpletable">
+<caption>OLS Regression Results</caption>
+<tr>
+  <th>Dep. Variable:</th>          <td>medv</td>       <th>  R-squared:         </th> <td>   0.539</td>
+</tr>
+<tr>
+  <th>Model:</th>                   <td>OLS</td>       <th>  Adj. R-squared:    </th> <td>   0.538</td>
+</tr>
+<tr>
+  <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   482.5</td>
+</tr>
+<tr>
+  <th>Date:</th>             <td>Sat, 26 Dec 2020</td> <th>  Prob (F-statistic):</th> <td>2.08e-71</td>
+</tr>
+<tr>
+  <th>Time:</th>                 <td>19:24:10</td>     <th>  Log-Likelihood:    </th> <td> -1294.7</td>
+</tr>
+<tr>
+  <th>No. Observations:</th>      <td>   415</td>      <th>  AIC:               </th> <td>   2593.</td>
+</tr>
+<tr>
+  <th>Df Residuals:</th>          <td>   413</td>      <th>  BIC:               </th> <td>   2602.</td>
+</tr>
+<tr>
+  <th>Df Model:</th>              <td>     1</td>      <th>                     </th>     <td> </td>   
+</tr>
+<tr>
+  <th>Covariance Type:</th>      <td>nonrobust</td>    <th>                     </th>     <td> </td>   
+</tr>
+</table>
+<table class="simpletable">
+<tr>
+      <td></td>         <th>coef</th>     <th>std err</th>      <th>t</th>      <th>P>|t|</th>  <th>[0.025</th>    <th>0.975]</th>  
+</tr>
+<tr>
+  <th>Intercept</th> <td>  -38.4062</td> <td>    2.779</td> <td>  -13.819</td> <td> 0.000</td> <td>  -43.869</td> <td>  -32.943</td>
+</tr>
+<tr>
+  <th>rm</th>        <td>    9.6944</td> <td>    0.441</td> <td>   21.966</td> <td> 0.000</td> <td>    8.827</td> <td>   10.562</td>
+</tr>
+</table>
+<table class="simpletable">
+<tr>
+  <th>Omnibus:</th>       <td>124.274</td> <th>  Durbin-Watson:     </th> <td>   0.832</td> 
+</tr>
+<tr>
+  <th>Prob(Omnibus):</th> <td> 0.000</td>  <th>  Jarque-Bera (JB):  </th> <td>1299.795</td> 
+</tr>
+<tr>
+  <th>Skew:</th>          <td> 0.949</td>  <th>  Prob(JB):          </th> <td>5.66e-283</td>
+</tr>
+<tr>
+  <th>Kurtosis:</th>      <td>11.460</td>  <th>  Cond. No.          </th> <td>    66.5</td> 
+</tr>
+</table><br/><br/>Warnings:<br/>[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+
+
+![png](output_34_1.png)
+
+
+
+<table class="simpletable">
+<caption>OLS Regression Results</caption>
+<tr>
+  <th>Dep. Variable:</th>          <td>medv</td>       <th>  R-squared:         </th> <td>   0.094</td>
+</tr>
+<tr>
+  <th>Model:</th>                   <td>OLS</td>       <th>  Adj. R-squared:    </th> <td>   0.092</td>
+</tr>
+<tr>
+  <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   42.72</td>
+</tr>
+<tr>
+  <th>Date:</th>             <td>Sat, 26 Dec 2020</td> <th>  Prob (F-statistic):</th> <td>1.87e-10</td>
+</tr>
+<tr>
+  <th>Time:</th>                 <td>19:24:11</td>     <th>  Log-Likelihood:    </th> <td> -1434.9</td>
+</tr>
+<tr>
+  <th>No. Observations:</th>      <td>   415</td>      <th>  AIC:               </th> <td>   2874.</td>
+</tr>
+<tr>
+  <th>Df Residuals:</th>          <td>   413</td>      <th>  BIC:               </th> <td>   2882.</td>
+</tr>
+<tr>
+  <th>Df Model:</th>              <td>     1</td>      <th>                     </th>     <td> </td>   
+</tr>
+<tr>
+  <th>Covariance Type:</th>      <td>nonrobust</td>    <th>                     </th>     <td> </td>   
+</tr>
+</table>
+<table class="simpletable">
+<tr>
+      <td></td>         <th>coef</th>     <th>std err</th>      <th>t</th>      <th>P>|t|</th>  <th>[0.025</th>    <th>0.975]</th>  
+</tr>
+<tr>
+  <th>Intercept</th> <td>   21.1471</td> <td>    0.421</td> <td>   50.277</td> <td> 0.000</td> <td>   20.320</td> <td>   21.974</td>
+</tr>
+<tr>
+  <th>zn</th>        <td>    0.1257</td> <td>    0.019</td> <td>    6.536</td> <td> 0.000</td> <td>    0.088</td> <td>    0.163</td>
+</tr>
+</table>
+<table class="simpletable">
+<tr>
+  <th>Omnibus:</th>       <td>108.505</td> <th>  Durbin-Watson:     </th> <td>   0.836</td>
+</tr>
+<tr>
+  <th>Prob(Omnibus):</th> <td> 0.000</td>  <th>  Jarque-Bera (JB):  </th> <td> 251.650</td>
+</tr>
+<tr>
+  <th>Skew:</th>          <td> 1.321</td>  <th>  Prob(JB):          </th> <td>2.26e-55</td>
+</tr>
+<tr>
+  <th>Kurtosis:</th>      <td> 5.752</td>  <th>  Cond. No.          </th> <td>    24.4</td>
+</tr>
+</table><br/><br/>Warnings:<br/>[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+
+
+![png](output_34_3.png)
+
+
+
+```python
+
+```
