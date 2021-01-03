@@ -819,7 +819,7 @@ scatter_plot(df_clean_final, 'medv', 'zn')
 ![png](output_32_2.png)
 
 
-There appears to be a linear relationship between `medv` and `rm`, but not `medv` and `zn`. Because of this, the legitimacy of `zn` as a variable must be questioned because it doesn't pass the linearity assumption. For now, I'm going to go through the entire regression process with these variables as is just as a vanilla process.
+There appears to be a linear relationship between `medv` and `rm`, but not `medv` and `zn`. Because of this, the legitimacy of `zn` as a variable must be questioned because it doesn't pass the linearity assumption. For now, I'm going to go through the entire regression process with these variables as is, just as a vanilla process.
 
 
 ```python
@@ -863,10 +863,10 @@ plt.show()
   <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   482.5</td>
 </tr>
 <tr>
-  <th>Date:</th>             <td>Sat, 26 Dec 2020</td> <th>  Prob (F-statistic):</th> <td>2.08e-71</td>
+  <th>Date:</th>             <td>Sat, 02 Jan 2021</td> <th>  Prob (F-statistic):</th> <td>2.08e-71</td>
 </tr>
 <tr>
-  <th>Time:</th>                 <td>19:24:10</td>     <th>  Log-Likelihood:    </th> <td> -1294.7</td>
+  <th>Time:</th>                 <td>17:41:21</td>     <th>  Log-Likelihood:    </th> <td> -1294.7</td>
 </tr>
 <tr>
   <th>No. Observations:</th>      <td>   415</td>      <th>  AIC:               </th> <td>   2593.</td>
@@ -925,10 +925,10 @@ plt.show()
   <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   42.72</td>
 </tr>
 <tr>
-  <th>Date:</th>             <td>Sat, 26 Dec 2020</td> <th>  Prob (F-statistic):</th> <td>1.87e-10</td>
+  <th>Date:</th>             <td>Sat, 02 Jan 2021</td> <th>  Prob (F-statistic):</th> <td>1.87e-10</td>
 </tr>
 <tr>
-  <th>Time:</th>                 <td>19:24:11</td>     <th>  Log-Likelihood:    </th> <td> -1434.9</td>
+  <th>Time:</th>                 <td>17:41:21</td>     <th>  Log-Likelihood:    </th> <td> -1434.9</td>
 </tr>
 <tr>
   <th>No. Observations:</th>      <td>   415</td>      <th>  AIC:               </th> <td>   2874.</td>
@@ -972,6 +972,298 @@ plt.show()
 
 
 ![png](output_34_3.png)
+
+
+
+```python
+from statsmodels.formula.api import ols
+f = 'medv~rm+zn'
+model = ols(formula=f, data=df_clean_final).fit()
+model.summary()
+```
+
+
+
+
+<table class="simpletable">
+<caption>OLS Regression Results</caption>
+<tr>
+  <th>Dep. Variable:</th>          <td>medv</td>       <th>  R-squared:         </th> <td>   0.549</td>
+</tr>
+<tr>
+  <th>Model:</th>                   <td>OLS</td>       <th>  Adj. R-squared:    </th> <td>   0.547</td>
+</tr>
+<tr>
+  <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   250.8</td>
+</tr>
+<tr>
+  <th>Date:</th>             <td>Sat, 02 Jan 2021</td> <th>  Prob (F-statistic):</th> <td>5.76e-72</td>
+</tr>
+<tr>
+  <th>Time:</th>                 <td>17:41:22</td>     <th>  Log-Likelihood:    </th> <td> -1290.1</td>
+</tr>
+<tr>
+  <th>No. Observations:</th>      <td>   415</td>      <th>  AIC:               </th> <td>   2586.</td>
+</tr>
+<tr>
+  <th>Df Residuals:</th>          <td>   412</td>      <th>  BIC:               </th> <td>   2598.</td>
+</tr>
+<tr>
+  <th>Df Model:</th>              <td>     2</td>      <th>                     </th>     <td> </td>   
+</tr>
+<tr>
+  <th>Covariance Type:</th>      <td>nonrobust</td>    <th>                     </th>     <td> </td>   
+</tr>
+</table>
+<table class="simpletable">
+<tr>
+      <td></td>         <th>coef</th>     <th>std err</th>      <th>t</th>      <th>P>|t|</th>  <th>[0.025</th>    <th>0.975]</th>  
+</tr>
+<tr>
+  <th>Intercept</th> <td>  -36.3343</td> <td>    2.834</td> <td>  -12.820</td> <td> 0.000</td> <td>  -41.906</td> <td>  -30.763</td>
+</tr>
+<tr>
+  <th>rm</th>        <td>    9.2976</td> <td>    0.456</td> <td>   20.393</td> <td> 0.000</td> <td>    8.401</td> <td>   10.194</td>
+</tr>
+<tr>
+  <th>zn</th>        <td>    0.0432</td> <td>    0.014</td> <td>    3.050</td> <td> 0.002</td> <td>    0.015</td> <td>    0.071</td>
+</tr>
+</table>
+<table class="simpletable">
+<tr>
+  <th>Omnibus:</th>       <td>139.817</td> <th>  Durbin-Watson:     </th> <td>   0.849</td>
+</tr>
+<tr>
+  <th>Prob(Omnibus):</th> <td> 0.000</td>  <th>  Jarque-Bera (JB):  </th> <td>1438.941</td>
+</tr>
+<tr>
+  <th>Skew:</th>          <td> 1.120</td>  <th>  Prob(JB):          </th> <td>    0.00</td>
+</tr>
+<tr>
+  <th>Kurtosis:</th>      <td>11.843</td>  <th>  Cond. No.          </th> <td>    237.</td>
+</tr>
+</table><br/><br/>Warnings:<br/>[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+
+
+### Initial Conclusion
+
+Looking at the r-squared score, only 54.9% of the results can be directly explained by the data. This suggest 1 of 2 things, or possibly both:
+
+* There isn't enough total data samples (only 415 observations)
+* The data needs to be more thoroughly preprocessed before running the model.
+
+So, I am going to go through the variables and scale them to try and imporve performance. All variables will be scaled, excpet for the target variable `medv`.
+
+
+```python
+import seaborn as sns
+x = df_clean_final['medv']
+ax = sns.distplot(x)
+```
+
+
+![png](output_38_0.png)
+
+
+
+```python
+from sklearn.preprocessing import StandardScaler
+def scale(df, col):
+    scaler = StandardScaler()
+    col_data = df[col].values.reshape(-1,1)
+    scale_data = scaler.fit_transform(col_data)
+    df[col] = scale_data.flatten()
+
+    z = df[col]
+    ax = sns.distplot(z)
+```
+
+
+```python
+scale(df_clean_final, 'crim')
+```
+
+    /Users/acusiobivona/opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:6: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame.
+    Try using .loc[row_indexer,col_indexer] = value instead
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      
+
+
+
+![png](output_40_1.png)
+
+
+
+```python
+scale(df_clean_final, 'zn')
+```
+
+    /Users/acusiobivona/opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:6: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame.
+    Try using .loc[row_indexer,col_indexer] = value instead
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      
+
+
+
+![png](output_41_1.png)
+
+
+
+```python
+scale(df_clean_final, 'indus')
+```
+
+    /Users/acusiobivona/opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:6: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame.
+    Try using .loc[row_indexer,col_indexer] = value instead
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      
+
+
+
+![png](output_42_1.png)
+
+
+
+```python
+scale(df_clean_final, 'nox')
+```
+
+    /Users/acusiobivona/opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:6: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame.
+    Try using .loc[row_indexer,col_indexer] = value instead
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      
+
+
+
+![png](output_43_1.png)
+
+
+
+```python
+scale(df_clean_final, 'rm')
+```
+
+    /Users/acusiobivona/opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:6: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame.
+    Try using .loc[row_indexer,col_indexer] = value instead
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      
+
+
+
+![png](output_44_1.png)
+
+
+
+```python
+scale(df_clean_final, 'age')
+```
+
+    /Users/acusiobivona/opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:6: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame.
+    Try using .loc[row_indexer,col_indexer] = value instead
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      
+
+
+
+![png](output_45_1.png)
+
+
+
+```python
+scale(df_clean_final, 'dis')
+```
+
+    /Users/acusiobivona/opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:6: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame.
+    Try using .loc[row_indexer,col_indexer] = value instead
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      
+
+
+
+![png](output_46_1.png)
+
+
+
+```python
+scale(df_clean_final, 'tax')
+```
+
+    /Users/acusiobivona/opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:6: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame.
+    Try using .loc[row_indexer,col_indexer] = value instead
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      
+
+
+
+![png](output_47_1.png)
+
+
+
+```python
+scale(df_clean_final, 'ptratio')
+```
+
+    /Users/acusiobivona/opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:6: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame.
+    Try using .loc[row_indexer,col_indexer] = value instead
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      
+
+
+
+![png](output_48_1.png)
+
+
+
+```python
+scale(df_clean_final, 'b')
+```
+
+    /Users/acusiobivona/opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:6: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame.
+    Try using .loc[row_indexer,col_indexer] = value instead
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      
+
+
+
+![png](output_49_1.png)
+
+
+
+```python
+scale(df_clean_final, 'lstat')
+```
+
+    /Users/acusiobivona/opt/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:6: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame.
+    Try using .loc[row_indexer,col_indexer] = value instead
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+      
+
+
+
+![png](output_50_1.png)
 
 
 
