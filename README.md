@@ -863,10 +863,10 @@ plt.show()
   <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   482.5</td>
 </tr>
 <tr>
-  <th>Date:</th>             <td>Sat, 02 Jan 2021</td> <th>  Prob (F-statistic):</th> <td>2.08e-71</td>
+  <th>Date:</th>             <td>Sat, 09 Jan 2021</td> <th>  Prob (F-statistic):</th> <td>2.08e-71</td>
 </tr>
 <tr>
-  <th>Time:</th>                 <td>17:41:21</td>     <th>  Log-Likelihood:    </th> <td> -1294.7</td>
+  <th>Time:</th>                 <td>14:48:05</td>     <th>  Log-Likelihood:    </th> <td> -1294.7</td>
 </tr>
 <tr>
   <th>No. Observations:</th>      <td>   415</td>      <th>  AIC:               </th> <td>   2593.</td>
@@ -925,10 +925,10 @@ plt.show()
   <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   42.72</td>
 </tr>
 <tr>
-  <th>Date:</th>             <td>Sat, 02 Jan 2021</td> <th>  Prob (F-statistic):</th> <td>1.87e-10</td>
+  <th>Date:</th>             <td>Sat, 09 Jan 2021</td> <th>  Prob (F-statistic):</th> <td>1.87e-10</td>
 </tr>
 <tr>
-  <th>Time:</th>                 <td>17:41:21</td>     <th>  Log-Likelihood:    </th> <td> -1434.9</td>
+  <th>Time:</th>                 <td>14:48:06</td>     <th>  Log-Likelihood:    </th> <td> -1434.9</td>
 </tr>
 <tr>
   <th>No. Observations:</th>      <td>   415</td>      <th>  AIC:               </th> <td>   2874.</td>
@@ -997,10 +997,10 @@ model.summary()
   <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   250.8</td>
 </tr>
 <tr>
-  <th>Date:</th>             <td>Sat, 02 Jan 2021</td> <th>  Prob (F-statistic):</th> <td>5.76e-72</td>
+  <th>Date:</th>             <td>Sat, 09 Jan 2021</td> <th>  Prob (F-statistic):</th> <td>5.76e-72</td>
 </tr>
 <tr>
-  <th>Time:</th>                 <td>17:41:22</td>     <th>  Log-Likelihood:    </th> <td> -1290.1</td>
+  <th>Time:</th>                 <td>14:48:06</td>     <th>  Log-Likelihood:    </th> <td> -1290.1</td>
 </tr>
 <tr>
   <th>No. Observations:</th>      <td>   415</td>      <th>  AIC:               </th> <td>   2586.</td>
@@ -1265,6 +1265,203 @@ scale(df_clean_final, 'lstat')
 
 ![png](output_50_1.png)
 
+
+
+```python
+scaled_df = df_clean_final.copy()
+scaled_df.info()
+```
+
+    <class 'pandas.core.frame.DataFrame'>
+    Int64Index: 415 entries, 0 to 505
+    Data columns (total 12 columns):
+    crim       415 non-null float64
+    zn         415 non-null float64
+    indus      415 non-null float64
+    nox        415 non-null float64
+    rm         415 non-null float64
+    age        415 non-null float64
+    dis        415 non-null float64
+    tax        415 non-null float64
+    ptratio    415 non-null float64
+    b          415 non-null float64
+    lstat      415 non-null float64
+    medv       415 non-null float64
+    dtypes: float64(12)
+    memory usage: 42.1 KB
+
+
+
+```python
+heatmap(scaled_df)
+```
+
+
+![png](output_52_0.png)
+
+
+
+```python
+scatter_plot(scaled_df, 'medv', 'rm')
+scatter_plot(scaled_df, 'medv', 'zn')
+```
+
+    'c' argument looks like a single numeric RGB or RGBA sequence, which should be avoided as value-mapping will have precedence in case its length matches with 'x' & 'y'.  Please use a 2-D array with a single row if you really want to specify the same RGB or RGBA value for all points.
+    'c' argument looks like a single numeric RGB or RGBA sequence, which should be avoided as value-mapping will have precedence in case its length matches with 'x' & 'y'.  Please use a 2-D array with a single row if you really want to specify the same RGB or RGBA value for all points.
+
+
+
+![png](output_53_1.png)
+
+
+
+![png](output_53_2.png)
+
+
+
+```python
+f = 'medv~rm'
+f2 = 'medv~zn'
+
+model = smf.ols(formula=f, data=scaled_df).fit()
+model2 = smf.ols(formula=f2, data=scaled_df).fit()
+
+resid1 = model.resid
+resid2 = model2.resid
+
+display(model.summary())
+fig = sm.graphics.qqplot(resid1, dist=stats.norm, line='45', fit=True)
+plt.show()
+display(model2.summary())
+fig2 = sm.graphics.qqplot(resid2, dist=stats.norm, line='45', fit=True)
+plt.show()
+```
+
+
+<table class="simpletable">
+<caption>OLS Regression Results</caption>
+<tr>
+  <th>Dep. Variable:</th>          <td>medv</td>       <th>  R-squared:         </th> <td>   0.539</td>
+</tr>
+<tr>
+  <th>Model:</th>                   <td>OLS</td>       <th>  Adj. R-squared:    </th> <td>   0.538</td>
+</tr>
+<tr>
+  <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   482.5</td>
+</tr>
+<tr>
+  <th>Date:</th>             <td>Sat, 09 Jan 2021</td> <th>  Prob (F-statistic):</th> <td>2.08e-71</td>
+</tr>
+<tr>
+  <th>Time:</th>                 <td>14:48:21</td>     <th>  Log-Likelihood:    </th> <td> -1294.7</td>
+</tr>
+<tr>
+  <th>No. Observations:</th>      <td>   415</td>      <th>  AIC:               </th> <td>   2593.</td>
+</tr>
+<tr>
+  <th>Df Residuals:</th>          <td>   413</td>      <th>  BIC:               </th> <td>   2602.</td>
+</tr>
+<tr>
+  <th>Df Model:</th>              <td>     1</td>      <th>                     </th>     <td> </td>   
+</tr>
+<tr>
+  <th>Covariance Type:</th>      <td>nonrobust</td>    <th>                     </th>     <td> </td>   
+</tr>
+</table>
+<table class="simpletable">
+<tr>
+      <td></td>         <th>coef</th>     <th>std err</th>      <th>t</th>      <th>P>|t|</th>  <th>[0.025</th>    <th>0.975]</th>  
+</tr>
+<tr>
+  <th>Intercept</th> <td>   22.3540</td> <td>    0.270</td> <td>   82.918</td> <td> 0.000</td> <td>   21.824</td> <td>   22.884</td>
+</tr>
+<tr>
+  <th>rm</th>        <td>    5.9220</td> <td>    0.270</td> <td>   21.966</td> <td> 0.000</td> <td>    5.392</td> <td>    6.452</td>
+</tr>
+</table>
+<table class="simpletable">
+<tr>
+  <th>Omnibus:</th>       <td>124.274</td> <th>  Durbin-Watson:     </th> <td>   0.832</td> 
+</tr>
+<tr>
+  <th>Prob(Omnibus):</th> <td> 0.000</td>  <th>  Jarque-Bera (JB):  </th> <td>1299.795</td> 
+</tr>
+<tr>
+  <th>Skew:</th>          <td> 0.949</td>  <th>  Prob(JB):          </th> <td>5.66e-283</td>
+</tr>
+<tr>
+  <th>Kurtosis:</th>      <td>11.460</td>  <th>  Cond. No.          </th> <td>    1.00</td> 
+</tr>
+</table><br/><br/>Warnings:<br/>[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+
+
+![png](output_54_1.png)
+
+
+
+<table class="simpletable">
+<caption>OLS Regression Results</caption>
+<tr>
+  <th>Dep. Variable:</th>          <td>medv</td>       <th>  R-squared:         </th> <td>   0.094</td>
+</tr>
+<tr>
+  <th>Model:</th>                   <td>OLS</td>       <th>  Adj. R-squared:    </th> <td>   0.092</td>
+</tr>
+<tr>
+  <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   42.72</td>
+</tr>
+<tr>
+  <th>Date:</th>             <td>Sat, 09 Jan 2021</td> <th>  Prob (F-statistic):</th> <td>1.87e-10</td>
+</tr>
+<tr>
+  <th>Time:</th>                 <td>14:48:21</td>     <th>  Log-Likelihood:    </th> <td> -1434.9</td>
+</tr>
+<tr>
+  <th>No. Observations:</th>      <td>   415</td>      <th>  AIC:               </th> <td>   2874.</td>
+</tr>
+<tr>
+  <th>Df Residuals:</th>          <td>   413</td>      <th>  BIC:               </th> <td>   2882.</td>
+</tr>
+<tr>
+  <th>Df Model:</th>              <td>     1</td>      <th>                     </th>     <td> </td>   
+</tr>
+<tr>
+  <th>Covariance Type:</th>      <td>nonrobust</td>    <th>                     </th>     <td> </td>   
+</tr>
+</table>
+<table class="simpletable">
+<tr>
+      <td></td>         <th>coef</th>     <th>std err</th>      <th>t</th>      <th>P>|t|</th>  <th>[0.025</th>    <th>0.975]</th>  
+</tr>
+<tr>
+  <th>Intercept</th> <td>   22.3540</td> <td>    0.378</td> <td>   59.150</td> <td> 0.000</td> <td>   21.611</td> <td>   23.097</td>
+</tr>
+<tr>
+  <th>zn</th>        <td>    2.4701</td> <td>    0.378</td> <td>    6.536</td> <td> 0.000</td> <td>    1.727</td> <td>    3.213</td>
+</tr>
+</table>
+<table class="simpletable">
+<tr>
+  <th>Omnibus:</th>       <td>108.505</td> <th>  Durbin-Watson:     </th> <td>   0.836</td>
+</tr>
+<tr>
+  <th>Prob(Omnibus):</th> <td> 0.000</td>  <th>  Jarque-Bera (JB):  </th> <td> 251.650</td>
+</tr>
+<tr>
+  <th>Skew:</th>          <td> 1.321</td>  <th>  Prob(JB):          </th> <td>2.26e-55</td>
+</tr>
+<tr>
+  <th>Kurtosis:</th>      <td> 5.752</td>  <th>  Cond. No.          </th> <td>    1.00</td>
+</tr>
+</table><br/><br/>Warnings:<br/>[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+
+
+![png](output_54_3.png)
+
+
+So, either scaling has made essentially no difference, or I have made a mistake and need to investigate more because the results of the heat map and qq plots are identical.
 
 
 ```python
